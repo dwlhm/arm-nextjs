@@ -1,9 +1,20 @@
-html,
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap');
+
+html {
+
+    background: url(/siulet_bg.svg);
+    background-size: cover;
+    background-position: bottom;
+}
+
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    min-width: max-content;
+    align-items: center;
+    justify-content: center;
 }
 
 a {

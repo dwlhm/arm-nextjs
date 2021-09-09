@@ -14,6 +14,7 @@ export default function Home() {
       <main className={styles.main}>
         <img className={styles.logo} src="/arm.svg"/>
         <h1 className={styles.title}>API Amaliyah Robithoh Murid</h1>
+        <h2 className={styles.desc}>404 | This page could not be found.</h2>
       </main>
 
     </div>
