@@ -40,6 +40,8 @@ export default async function handler(req, res) {
     			data: null
     		})
 
+    		return ''
+
     	}
 
     	res.status(500)
