@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
     } catch(error) {
 
-      logUtil(error)
+      console.log(error)
 
       if (error.code) {
 
