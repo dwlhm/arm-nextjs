@@ -15,6 +15,8 @@ export default async function handler(req, res) {
 	            author: 'admin'
 	        }
 
+	        console.log(data)
+
 	        await writeItemOnItem(data).then(result => {
 	            
 	          if (result === null) throw { code: 38.1 }

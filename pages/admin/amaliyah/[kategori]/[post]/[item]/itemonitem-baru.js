@@ -39,9 +39,9 @@ export default function ItemonitemBaru() {
     const upItem = async event => {
         event.preventDefault()
 
-        console.log(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}`)
+        console.log(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}/${item}`)
 
-        const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}`, {
+        const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}/${item}`, {
             method: 'POST',
             body: JSON.stringify({
                 body: content
@@ -52,7 +52,7 @@ export default function ItemonitemBaru() {
         })
 
         if (res.ok) {
-            router.push(`/admin/amaliyah/${kategori}/${post}/${event.target.alias.value}`)
+            router.push(`/admin/amaliyah/${kategori}/${post}/${item}`)
 
             return ''
         }
