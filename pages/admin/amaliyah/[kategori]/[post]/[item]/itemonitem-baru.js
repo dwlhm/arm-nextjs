@@ -39,8 +39,6 @@ export default function ItemonitemBaru() {
     const upItem = async event => {
         event.preventDefault()
 
-        console.log(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}/${item}`)
-
         const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}/${item}`, {
             method: 'POST',
             body: JSON.stringify({
