@@ -1,4 +1,4 @@
-const { readPost } = require('../../../lib/amaliyah')
+const { readPost, readItemOnPost } = require('../../../lib/amaliyah')
 
 export default async function handler(req, res) {
 
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
 			if (post == undefined) throw undefined
 
-			if (post.item.length < 1) throw { code: 38.1 }
+			if (post.item.length < 1) post.item = []
 
 			post.item.forEach(it => {
 
@@ -39,8 +39,33 @@ export default async function handler(req, res) {
 
 		}
 
-		throw { code: 38.1 }
+		
+		let item = await readItemOnPost(kategori)
 
+		if (item == null) throw { code: 38.1 }
+
+		if (item == undefined) throw undefined
+
+		if (item.item.length < 1) item.item = []
+
+		item.item.forEach(it => {
+
+			it.itemsNumber = undefined
+			it.itemsOrder = undefined
+			it.itemsLength = undefined
+
+			return it
+
+		})
+
+		res.status(200)
+		res.json({
+			status: 200,
+			message: 'Success',
+			data: item.item
+		})
+
+		return ''
 
 	} catch(error) {
 

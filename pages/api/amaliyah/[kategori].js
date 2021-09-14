@@ -4,13 +4,15 @@ export default async function handler(req, res) {
 
 	 try {
 
+	 	if (req.method !== 'GET') throw { code: 38.1 }
+
 		let listPost = await readKategori(req.query)
 
 	 	if (listPost == null) throw { code: 38.1 }
 
 	    if (listPost == undefined) throw undefined
 
-	    if (listPost.post.length < 1) throw { code: 38.1 }
+	    if (listPost.post.length < 1) listPost.post = []
 
 		listPost.post.forEach(it => {
 

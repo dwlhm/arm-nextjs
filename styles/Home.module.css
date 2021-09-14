@@ -1,6 +1,14 @@
 .main {
 	padding: 1rem;
-	text-align: center;
+    min-height: 100vh;
+    display: flex;
+    min-width: max-content;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: url(/siulet_bg.svg);
+    background-size: cover;
+    background-position: bottom;
 }
 
 .logo {

@@ -1,9 +1,35 @@
-
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-const { read: listKategori } = require('../../lib/amaliyah')
+const { writeKategori } = require('../../../../lib/write.amaliyah')
+const { read: listKategori } = require('../../../../lib/amaliyah')
 
 export default async function handler(req, res) {
   try {
+
+      if (req.method == 'POST') {
+
+        const data = {
+            ...req.body,
+            author: 'admin'
+        }
+
+        await writeKategori(data).then(result => {
+            
+          if (result === null) throw { code: 38.1 }
+            
+          if (result === undefined) throw undefined
+
+          res.status(200).json({
+            status: 200,
+            message: "Success",
+            data: result 
+          })
+
+          return ''
+      
+        })
+
+        return ''
+
+      }
 
       if (req.method !== 'GET') throw { code: 38.1 }
 
