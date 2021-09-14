@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../../../../../../components/header'
 import Nav from '../../../../../../components/nav'
 import fetch from 'node-fetch'
@@ -13,12 +13,29 @@ const MDEditor = dynamic(() => import("react-markdown-editor-lite"), {
 	ssr: false
 })
 
-export default function Item() {
+export default function ItemonitemBaru() {
 
 	const router = useRouter()
-	const { kategori, post, item } = router.query
+
+    const [ docs, setDocs ] = useState({
+        kategori: "",
+        post: "",
+        item: ""
+    })
+
+    useEffect(()=>{
+        if(!router.isReady) return;
+
+        setDocs(router.query)
+
+    }, [router.isReady]);
+
+    const { kategori, post, item } = docs
 
     let manipulatedItem = item.replace(/-/g, ' ')
+
+    const [ content, setContent ] = useState([''])
+
 
 	return(
         <div>
@@ -45,9 +62,16 @@ export default function Item() {
                 <div className="mb-5">
                 	<MDEditor
                 		style={{ minHeight: "500px" }}
-                		renderHTML={(text) => <ReactMarkdown>{text}</ReactMarkdown>}
+                		renderHTML={(text) => {
+                            setContent(text.split('\n'))
+                            return <ReactMarkdown>{text}</ReactMarkdown>
+                        }}
                 	/>
-                </div>  
+                </div>
+
+                {console.log(content)}
+
+                <div>{content.length}</div>  
             </div>
         </div>
     )

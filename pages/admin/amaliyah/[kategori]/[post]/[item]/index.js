@@ -41,7 +41,7 @@ export default function Kategori({ data }) {
 
             	{ data.data.item.map(data => ( 
 
-                    <div className="my-2 grid grid-cols-5 gap-4">
+                    <div key={ data.alias ? data.alias : data.itemsNumber } className="my-2 grid grid-cols-5 gap-4">
                         <h4 className="bg-gray-400 rounded-md text-base text-white p-5 col-span-3">{data.body}</h4>
                         <div className="col-span-2 grid grid-cols-4 gap-4 p-2">
                             <div className="flex flex-wrap justify-center items-center border-2 text-white border-white bg-gray-400 rounded-md hover:bg-black hover:text-white">
