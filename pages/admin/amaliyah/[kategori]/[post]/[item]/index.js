@@ -62,14 +62,12 @@ export default function Kategori({ data }) {
 		)
 }
 
-export async function getServerSideProps({ query }) {
-	const kategori = query.kategori
-	const post = query.post
-    const item = query.item
+export async function getServerSideProps(context) {
+	const kategori = context.query.kategori
+	const post = context.query.post
+    const item = context.query.item
 
-	console.log(kategori)
-
-	const response = await fetch(`http://localhost:3000/api/admin/amaliyah/${kategori}/${post}/${item}`);
+	const response = await fetch(`${process.env.hostname}/api/admin/amaliyah/${kategori}/${post}/${item}`);
     let data = await response.json()
 
     console.log(data)

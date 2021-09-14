@@ -20,7 +20,7 @@ export default function PostBaru() {
     const upPost = async event => {
         event.preventDefault()
 
-        const res = await fetch(`http://localhost:3000/api/admin/amaliyah/${kategori}`, {
+        const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}`, {
             method: 'POST',
             body: JSON.stringify({
                 name: event.target.name.value,

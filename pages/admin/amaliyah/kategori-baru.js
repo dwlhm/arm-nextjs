@@ -16,7 +16,7 @@ export default function KategoriBaru() {
     const upKategori = async event => {
         event.preventDefault()
 
-        const res = await fetch('http://localhost:3000/api/admin/amaliyah/', {
+        const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/`, {
             method: 'POST',
             body: JSON.stringify({
                 name: event.target.name.value,

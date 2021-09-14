@@ -36,6 +36,33 @@ export default function ItemonitemBaru() {
 
     const [ content, setContent ] = useState([''])
 
+    const upItem = async event => {
+        event.preventDefault()
+
+        console.log(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}`)
+
+        const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                body: content
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if (res.ok) {
+            router.push(`/admin/amaliyah/${kategori}/${post}/${event.target.alias.value}`)
+
+            return ''
+        }
+
+
+        setBewara({
+            display: 'block',
+            content: 'The content you entered was detected as duplicate content.'
+        })
+    }
 
 	return(
         <div>
@@ -52,26 +79,26 @@ export default function ItemonitemBaru() {
                         <Link href={`/admin/amaliyah/${kategori}/${post}/${item}`}><a>Kembali</a></Link>
                     </div>
                     <div className="col-span-4 flex flex-wrap items-center ungu rounded-md p-3">
-                        <h2 className="font-bold text-base text-white">Post Baru</h2>
+                        <h2 className="font-bold text-base text-white">Item Baru</h2>
                     </div>
                     <div className="flex flex-wrap items-center ungu rounded-md p-3">
                         <div className="text-xs text-white">ItemOnPost</div> 
                         <h2 className="text-base text-white">{ manipulatedItem.replace(/(^\w{1})|(\s{1}\w{1})/g, firstLetter => firstLetter.toUpperCase()) }</h2>
                     </div>
                 </div>
-                <div className="mb-5">
+                <form className="mb-5" onSubmit={upItem}>
                 	<MDEditor
+                        name="content"
                 		style={{ minHeight: "500px" }}
                 		renderHTML={(text) => {
                             setContent(text.split('\n'))
                             return <ReactMarkdown>{text}</ReactMarkdown>
                         }}
                 	/>
-                </div>
-
-                {console.log(content)}
-
-                <div>{content.length}</div>  
+                    <button type="submit" className="rounded-md ungu text-white text-base p-2 flex flex-wrap justify-center items-center w-full mt-5">
+                        Simpan Item
+                    </button>
+                </form>  
             </div>
         </div>
     )

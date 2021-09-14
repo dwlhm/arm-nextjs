@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../../../../../components/header'
 import Nav from '../../../../../components/nav'
 import fetch from 'node-fetch'
@@ -20,7 +20,7 @@ export default function ItemaspostBaru() {
     const upPost = async event => {
         event.preventDefault()
 
-        const res = await fetch(`http://localhost:3000/api/admin/amaliyah/${kategori}/${post}`, {
+        const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/${kategori}/${post}`, {
             method: 'POST',
             body: JSON.stringify({
                 name: event.target.name.value,

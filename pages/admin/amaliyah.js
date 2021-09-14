@@ -9,6 +9,7 @@ import Nav from '../../components/nav'
 export default function Amaliyah({ data }) {
     
     const [ content, setContent ] = useState("")
+    const [ hostname, setHostname ] = useState("")
 
     return(
         <div>
@@ -54,7 +55,7 @@ export default function Amaliyah({ data }) {
 
 export async function getServerSideProps() {
     
-    const response = await fetch('http://localhost:3000/api/admin/amaliyah/');
+    const response = await fetch(`${process.env.hostname}/api/admin/amaliyah/`);
     let data = await response.json()
 
     return {
