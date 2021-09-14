@@ -28,7 +28,7 @@ export default function KategoriBaru() {
         })
 
         if (res.ok) {
-            router.push(`/admin/amaliyah/${event.target.alias.value}`)
+            router.push(`/admin/amaliyah`)
 
             return ''
         }
