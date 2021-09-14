@@ -10,22 +10,22 @@ export default function Nav() {
 				</Link>
 			</div>
 			<div className="rounded-md p-2 ungu text-white text-center text-base border active hover:border-black">
-				<Link href="./amaliyah">
+				<Link href="/admin/amaliyah">
 					<a>Amaliyah</a>
 				</Link>
 			</div>
 			<div className="rounded-md p-2 text-black text-center text-base border hover:border-black">
-				<Link href="./berita">
+				<Link href="/admin/berita">
 					<a>Berita</a>
 				</Link>
 			</div>
 			<div className="rounded-md p-2 text-black text-center text-base border hover:border-black">
-				<Link href="./layanan-lain">
+				<Link href="/admin/layanan-lain">
 					<a>Layanan Lainnya</a>
 				</Link>
 			</div>
 			<div className="rounded-md p-2 text-black text-center text-base border hover:border-black">
-				<Link href="./banner">
+				<Link href="/admin/banner">
 					<a>Banner</a>
 				</Link>
 			</div>

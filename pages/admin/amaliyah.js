@@ -3,14 +3,8 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Head from 'next/head'
 import fetch from 'node-fetch'
-import ReactMarkdown from 'react-markdown'
-import 'react-markdown-editor-lite/lib/index.css'
 import Header from '../../components/header'
 import Nav from '../../components/nav'
-
-const MDEditor = dynamic(() => import("react-markdown-editor-lite"), {
-	ssr: false
-})
 
 export default function Amaliyah({ data }) {
     
@@ -58,7 +52,7 @@ export default function Amaliyah({ data }) {
     )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
     
     const response = await fetch('http://localhost:3000/api/admin/amaliyah/');
     let data = await response.json()
