@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
 			if (post.item.length < 1) post.item = []
 
-			post.item.forEach(it => {
+			/*post.item.forEach(it => {
 
 				it.itemsNumber = undefined
 				it.itemsOrder = undefined
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
 				return it
 
-			})
+			})*/
 
 			res.status(200)
 			res.json({
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
 
 		if (item.item.length < 1) item.item = []
 
-		item.item.forEach(it => {
+		/*item.item.forEach(it => {
 
 			it.itemsNumber = undefined
 			it.itemsOrder = undefined
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
 			return it
 
-		})
+		})*/
 
 		res.status(200)
 		res.json({
