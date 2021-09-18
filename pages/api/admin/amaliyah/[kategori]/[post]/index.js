@@ -1,5 +1,5 @@
 import { readPost } from '../../../../../../lib/amaliyah'
-import { writeItemAsPost } from '../../../../../../lib/write.amaliyah'
+import { writeItemAsPost, writeItemOnItem } from '../../../../../../lib/write.amaliyah'
 
 export default async function handler(req, res) {
 	
@@ -12,6 +12,27 @@ export default async function handler(req, res) {
 	        	post: req.query.post,
 	            data: req.body,
 	            author: 'admin'
+	        }
+
+	        if (req.body.body) {
+
+	        	await writeItemOnItem(data).then(result => {
+	            
+		          if (result === null) throw { code: 38.1 }
+		            
+		          if (result === undefined) throw undefined
+
+		          res.status(200).json({
+		            status: 200,
+		            message: "Success",
+		            data: result 
+		          })
+
+		          return ''
+		      
+		        })
+
+		        return ''
 	        }
 
 	        await writeItemAsPost(data).then(result => {

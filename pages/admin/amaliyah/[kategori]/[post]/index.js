@@ -30,18 +30,21 @@ export default function Kategori({ data }) {
                     	<div className="text-sm">Kategori</div>
                     	<h4 className="text-base font-bold">{ manipulatedKategori.replace(/(^\w{1})|(\s{1}\w{1})/g, firstLetter => firstLetter.toUpperCase()) }</h4>
                     </div>
-                    <div className="ungu rounded-md text-base text-white p-5 py-1 col-span-4 flex flex-wrap justify-center flex-col">
+                    <div className="ungu rounded-md text-base text-white p-5 py-1 col-span-3 flex flex-wrap justify-center flex-col">
                     	<div className="text-sm">Post</div>
                     	<h4 className="text-base font-bold">{ data.data.info.name }</h4>
                     </div>
                     <div className="border-2 border-ungu rounded-md flex justify-center items-center">
                         <Link href={`/admin/amaliyah/${kategori}/${post}/itemaspost-baru`}><a>Tambah ItemAsPost</a></Link>
                     </div>
+                    <div className="border-2 border-ungu rounded-md flex justify-center items-center">
+                        <Link href={`/admin/amaliyah/${kategori}/${post}/item-baru`}><a>Tambah Item</a></Link>
+                    </div>
                 </div>
 
             	{ data.data.item.map(data => ( 
 
-                    <div key={ data.alias } className="my-2 grid grid-cols-5 gap-4">
+                    <div key={ data.alias ? data.alias : 'item' + data.itemsNumber } className="my-2 grid grid-cols-5 gap-4">
                         <h4 className="bg-gray-400 rounded-md text-base text-white p-5 col-span-3">{data.name}</h4>
                         <div className="col-span-2 grid grid-cols-4 gap-4 p-2">
                             <div className="flex flex-wrap justify-center items-center border-2 text-white border-white bg-gray-400 rounded-md hover:bg-black hover:text-white">
