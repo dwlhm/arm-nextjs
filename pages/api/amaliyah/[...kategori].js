@@ -9,12 +9,9 @@ export default async function handler(req, res) {
 
 		const { page, limit, kategori } = req.query
 
-		let maxLength = page*limit
-		let minLength = maxLength-limit
-
 		if (kategori.length == 2) {
 
-			let post = await readPost({kategori: kategori[0], post: kategori[1], maxLength: maxLength, minLength: minLength})
+			let post = await readPost({kategori: kategori[0], post: kategori[1], page: page, limit: limit})
 
 			if (post == null) throw { code: 38.1 }
 
@@ -44,7 +41,7 @@ export default async function handler(req, res) {
 		}
 
 		
-		let item = await readItemOnPost(kategori)
+		let item = await readItemOnPost(kategori, maxLength, minLength)
 
 		const url = `https://amaliyah-mursyid.herokuapp.com/api/v1/app/amaliyah/${kategori[0]}/${kategori[1]}/${kategori[2]}`
 
@@ -54,7 +51,7 @@ export default async function handler(req, res) {
 
 		if (item == undefined) throw undefined
 
-		/*if (item.item.length < 1) item.item = []
+		if (item.item.length < 1) item.item = []
 
 		item.item.forEach(it => {
 
@@ -64,7 +61,7 @@ export default async function handler(req, res) {
 
 			return it
 
-		})*/
+		})
 
 		res.status(200)
 		res.json({
