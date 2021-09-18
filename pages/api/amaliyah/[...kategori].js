@@ -41,13 +41,17 @@ export default async function handler(req, res) {
 		}
 
 		
-		let item = await readItemOnPost(kategori)
+		//let item = await readItemOnPost(kategori)
+
+		const url = `https://amaliyah-mursyid.herokuapp.com/api/v1/app/amaliyah/${kategori[0]}/${kategori[1]}/${kategori[2]}`
+
+		let item = await fetch(url).then(it => it.json())
 
 		if (item == null) throw { code: 38.1 }
 
 		if (item == undefined) throw undefined
 
-		if (item.item.length < 1) item.item = []
+		/*if (item.item.length < 1) item.item = []
 
 		item.item.forEach(it => {
 
@@ -57,13 +61,13 @@ export default async function handler(req, res) {
 
 			return it
 
-		})
+		})*/
 
 		res.status(200)
 		res.json({
 			status: 200,
 			message: 'Success',
-			data: item.item
+			data: item
 		})
 
 		return ''
