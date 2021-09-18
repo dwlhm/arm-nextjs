@@ -1,4 +1,5 @@
 const { readPost, readItemOnPost } = require('../../../lib/amaliyah')
+import fetch from 'node-fetch'
 
 export default async function handler(req, res) {
 
@@ -48,7 +49,7 @@ export default async function handler(req, res) {
 
 		if (item.item.length < 1) item.item = []
 
-		/*item.item.forEach(it => {
+		item.item.forEach(it => {
 
 			it.itemsNumber = undefined
 			it.itemsOrder = undefined
@@ -56,7 +57,7 @@ export default async function handler(req, res) {
 
 			return it
 
-		})*/
+		})
 
 		res.status(200)
 		res.json({
