@@ -1,8 +1,13 @@
 const { writeKategori } = require('../../../../lib/write.amaliyah')
 const { read: listKategori } = require('../../../../lib/amaliyah')
+const { verify } = require('../../../../lib/auth')
 
 export default async function handler(req, res) {
   try {
+
+      const verifyData = await verify(req, res)
+
+      if (!verifyData) throw { unauthorized: true } 
 
       if (req.method == 'POST') {
 
@@ -20,6 +25,7 @@ export default async function handler(req, res) {
           res.status(200).json({
             status: 200,
             message: "Success",
+            accessToken: req.headers.accessToken,
             data: result 
           })
 
@@ -49,13 +55,25 @@ export default async function handler(req, res) {
 
       res.status(200).json({
         status: 200,
-          message: "Success",
-          data: kategori
+        message: "Success",
+        data: kategori,
+        accessToken: req.headers.accessToken,
       })
 
     } catch(error) {
 
       console.log(error)
+
+      if (error.unauthorized) {
+        res.status(401).json({
+          status: 401,
+            message: "Unauthorized",
+            data: null 
+        })
+
+        return ''
+
+      }
 
       if (error.code) {
 

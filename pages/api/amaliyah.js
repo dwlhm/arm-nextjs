@@ -1,5 +1,4 @@
 
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 const { read: listKategori } = require('../../lib/amaliyah')
 
 export default async function handler(req, res) {

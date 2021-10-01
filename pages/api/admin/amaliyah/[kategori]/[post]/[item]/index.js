@@ -1,9 +1,14 @@
 import { readItemOnPost } from '../../../../../../../lib/amaliyah'
 import { writeItemOnItem } from '../../../../../../../lib/write.amaliyah'
+import { verify } from '../../../../../../../lib/auth'
 
 export default async function handler(req, res) {
 	
 	try {
+
+		const verifyData = await verify(req, res)
+
+      	if (!verifyData) throw { unauthorized: true } 
 
 		if (req.method == 'POST') {
 
@@ -52,6 +57,17 @@ export default async function handler(req, res) {
     } catch(error) {
 
         console.log(error)
+
+        if (error.unauthorized) {
+	        res.status(401).json({
+	          status: 401,
+	            message: "Unauthorized",
+	            data: null 
+	        })
+
+	        return ''
+	        
+	    }
 
     	if (error.code) {
 

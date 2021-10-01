@@ -1,0 +1,11 @@
+#main {
+	background: url("/latar-auth.png");
+	background-size: contain;
+}
+
+#form::before {
+	content: "Email";
+}
+#form2::before {
+	content:  "Password";
+}

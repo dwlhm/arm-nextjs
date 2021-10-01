@@ -9,17 +9,13 @@ export default async function handler(req,res) {
 
 		const [ username, password ] = Buffer.from(req.headers.authorization.split(" ")[1], 'base64').toString().split(':')
 
-		console.log(username + ' ' + password)
-
-		console.log(process.env.ADMIN_USERNAME + ' ' + process.env.ADMIN_PASSWORD)
-
 		if (process.env.ADMIN_USERNAME !== username) throw { code: 38.2 }
 
 		if (process.env.ADMIN_PASSWORD !== password) throw { code: 38.2 }
 
 		const to = req.body.to
 
-		const link = await generate({ email: to })
+		const link = await generate({ email: to }, '1h')
 
 		if (!to) throw { code: 38.1 }
 
@@ -37,8 +33,6 @@ export default async function handler(req,res) {
 			    Authorization: 'Basic YXBpOjQyZWViMzg2YjExZTc5MDgzMzRkY2JiMzA1M2E3MDM3LTkwMzQ2YTJkLTA5MDYwOTNm'
 			}
 		}
-
-		console.log(url)
 
 		const send = await fetch(url, options)
 

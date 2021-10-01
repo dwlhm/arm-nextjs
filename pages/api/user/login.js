@@ -2,20 +2,18 @@ import loginLib from '../../../lib/login'
 
 export default async function handler(req, res) {
 	
-	try {
+	try {	
 
 		if (req.method !== 'POST') throw { code: 38.1 }
 
 		const login = await loginLib(req.headers.authorization)
-
-	console.log(login)
 
 		if (!login) throw login
 
 		res.status(200).json({
 			status: 200,
 			message: 'Success',
-			data: 'wellcome!'
+			data: login
 		})
 
 	} catch(error) {
