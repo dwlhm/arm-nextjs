@@ -4,8 +4,11 @@ import { useState } from 'react'
 import Header from '../../../components/header'
 import Nav from '../../../components/nav'
 import fetch from 'node-fetch'
+import ErrorPage from '../../../components/error-page'
+import axios from 'axios'
+import cookie from 'js-cookie'
 
-export default function KategoriBaru() {
+export default function KategoriBaru({ data }) {
 
     const [ alias, setAlias] = useState("")
     const [ bewara, setBewara ] = useState({
@@ -16,28 +19,36 @@ export default function KategoriBaru() {
     const upKategori = async event => {
         event.preventDefault()
 
-        const res = await fetch(`https://api.amaliyahrobithohmurid.com/api/admin/amaliyah/`, {
+        const url = `${process.env.NEXT_PUBLIC_hostname}/api/admin/amaliyah/`
+        const options = {
+            url: url,
             method: 'POST',
-            body: JSON.stringify({
+            headers: {
+                Authorization: cookie.get('token'),
+                'Content-Type': 'application/json'
+            },
+            data: {
                 name: event.target.name.value,
                 alias: event.target.alias.value
-            }),
-            headers: {
-                'Content-Type': 'application/json'
             }
-        })
+        }
+        const res = await axios.request(options).then(res => res.data).err(err => err.response.data)
 
-        if (res.ok) {
+        if (res.status == 200) {
             router.push(`/admin/amaliyah`)
 
             return ''
         }
 
-
         setBewara({
             display: 'block',
             content: 'The content you entered was detected as duplicate content.'
         })
+    }
+
+
+    if (data.status == 401) {
+        return(<ErrorPage data={data} />)
     }
 	
 	return(
@@ -73,4 +84,19 @@ export default function KategoriBaru() {
             </div>
         </div>
 		)
+}
+
+export async function getServerSideProps(context) {
+
+    const url = `${process.env.hostname}/api/user/ping`
+    const options = {
+        url: url,
+        method: 'GET',
+        headers: { Authorization: cookie.get('token') }
+    }
+    const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
+
+    return {
+        props: { data }
+    }
 }

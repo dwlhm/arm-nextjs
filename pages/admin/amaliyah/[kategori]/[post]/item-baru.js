@@ -8,12 +8,15 @@ import fetch from 'node-fetch'
 import dynamic from 'next/dynamic'
 import ReactMarkdown from 'react-markdown'
 import 'react-markdown-editor-lite/lib/index.css'
+import ErrorPage from '../../../../../components/error-page'
+import axios from 'axios'
+import cookie from 'js-cookie'
 
 const MDEditor = dynamic(() => import("react-markdown-editor-lite"), {
 	ssr: false
 })
 
-export default function ItemonitemBaru() {
+export default function ItemonitemBaru({ data }) {
 
 	const router = useRouter()
 
@@ -39,18 +42,19 @@ export default function ItemonitemBaru() {
     const upItem = async event => {
         event.preventDefault()
 
-        try {
-            const res = await fetch(`http://localhost:3000/api/admin/amaliyah/${kategori}/${post}`, {
-            method: 'POST',
-            body: JSON.stringify({
-                body: content
-            }),
+        const url = `${process.env.NEXT_PUBLIC_hostname}/api/admin/amaliyah/${kategori}/${post}`
+        const options = {
+            url: url,
+            method: 'POST,
             headers: {
+                Authorization: cookie.get('token'),
                 'Content-Type': 'application/json'
-            }
-        })
+            },
+            data: { body: content }
+        }
+        const res = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 
-        if (res.ok) {
+        if (res.status == 200) {
             router.push(`/admin/amaliyah/${kategori}/${post}/`)
 
             return ''
@@ -61,11 +65,11 @@ export default function ItemonitemBaru() {
             display: 'block',
             content: 'The content you entered was detected as duplicate content.'
         })
-        } catch(error) {
-            console.log(error)
-        }
-
         
+    }
+
+    if (data.status) {
+        return(<ErrorPage data={data} />)
     }
 
 	return(
@@ -106,4 +110,19 @@ export default function ItemonitemBaru() {
             </div>
         </div>
     )
+}
+
+export async function getServerSideProps(context) {
+
+    const url = `${process.env.hostname}/api/user/ping`
+    const options = {
+        url: url,
+        method: 'GET',
+        headers: { Authorization: cookie.get('token') }
+    }
+    const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
+
+    return {
+        props: { data }
+    }
 }

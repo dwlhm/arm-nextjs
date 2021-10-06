@@ -3,6 +3,9 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Header from '../../../../../components/header'
 import Nav from '../../../../../components/nav'
+import ErrorPage from '../../../../../components/error-page'
+import axios from 'axios'
+import cookie from 'js-cooke'
 
 export default function Kategori({ data }) {
 
@@ -10,6 +13,10 @@ export default function Kategori({ data }) {
 	const { kategori, post } = router.query
 
 	let manipulatedKategori = kategori.replace('-', ' ')
+
+    if (data.status) {
+        return(<ErrorPage data={data} />)
+    }
 
 	return(
 		<div>
@@ -69,10 +76,13 @@ export async function getServerSideProps(context) {
 	const kategori = context.query.kategori
 	const post = context.query.post
 
-	const response = await fetch(`${process.env.hostname}/api/admin/amaliyah/${kategori}/${post}`);
-    let data = await response.json()
-
-    console.log(data)
+    const url = `${process.env.hostname}/api/admin/amaliyah/${kategori}/${post}`
+    const options = {
+        url: url,
+        method: 'GET',
+        headers: { Authorization: cookie.get('token')}
+    }
+    const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 
     return {
         props: {

@@ -5,11 +5,18 @@ import Head from 'next/head'
 import fetch from 'node-fetch'
 import Header from '../../components/header'
 import Nav from '../../components/nav'
+import ErrorPage from '../../components/error-page'
+import axios from 'axios'
+import cookie from 'js-cookie'
 
 export default function Amaliyah({ data }) {
     
     const [ content, setContent ] = useState("")
     const [ hostname, setHostname ] = useState("")
+
+    if (data.status == 401) {
+        return(<ErrorPage title="login" link="/users/login" message={data.status + " | " + data.message} />)
+    }
 
     return(
         <div>
@@ -54,9 +61,14 @@ export default function Amaliyah({ data }) {
 }
 
 export async function getServerSideProps() {
-    
-    const response = await fetch(`${process.env.hostname}/api/admin/amaliyah/`);
-    let data = await response.json()
+
+    const url = `${process.env.hostname}/api/admin/amaliyah`
+    const options = {
+        url: url,
+        method: 'GET',
+        headers: { Authorization: cookie.get('token')}
+    }
+    const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 
     return {
         props: {

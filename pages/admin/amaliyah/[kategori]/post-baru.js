@@ -5,8 +5,11 @@ import { useState } from 'react'
 import Header from '../../../../components/header'
 import Nav from '../../../../components/nav'
 import fetch from 'node-fetch'
+import ErrorPage from '../../../../components/error-page'
+import axios from 'axios'
+import cookie from 'cookie'
 
-export default function PostBaru() {
+export default function PostBaru({ data }) {
 
 	const router = useRouter()
 	const { kategori } = router.query
@@ -43,6 +46,11 @@ export default function PostBaru() {
             display: 'block',
             content: 'The content you entered was detected as duplicate content.'
         })
+    }
+
+
+    if (data.status == 401) {
+        return(<ErrorPage data={data} />)
     }
 	
 	return(
@@ -85,4 +93,19 @@ export default function PostBaru() {
             </div>
         </div>
 		)
+}
+
+export async function getServerSideProps(context) {
+
+    const url = `${process.env.hostname}/api/user/ping`
+    const options = {
+        url: url,
+        method: 'GET',
+        headers: { Authorization: cookie.get('token') }
+    }
+    const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
+
+    return {
+        props: { data }
+    }
 }

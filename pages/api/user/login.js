@@ -8,9 +8,11 @@ export default async function handler(req, res) {
 
 		const login = await loginLib(req.headers.authorization)
 
+	console.log(login)
+
 		if (!login) throw login
 
-		res.status(200).json({
+		res.status(202).json({
 			status: 200,
 			message: 'Success',
 			data: login

@@ -3,11 +3,19 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Header from '../../../../components/header'
 import Nav from '../../../../components/nav'
+import ErrorPage from '../../../../components/error-page'
+import axios from 'axios'
+import cookie from 'js-cookie'
 
 export default function Kategori({ data }) {
 
 	const router = useRouter()
 	const { kategori } = router.query
+
+
+    if (data.status) {
+        return(<ErrorPage data={data} />)
+    }
 
 	return(
 		<div>
@@ -56,10 +64,13 @@ export default function Kategori({ data }) {
 export async function getServerSideProps(context) {
 	const kategori = context.query.kategori
 
-	const response = await fetch(`${process.env.hostname}/api/admin/amaliyah/${kategori}`);
-    let data = await response.json()
-
-    console.log(data)
+    const url = `${process.env.hostname}/api/admin/amaliyah/${kategori}`
+    const options = {
+        url: url,
+        method: 'GET',
+        headers: { Authorization: cookie.get('token')}
+    }
+    const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 
     return {
         props: {
