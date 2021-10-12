@@ -1,35 +1,31 @@
 import { useState } from "react"
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import Head from 'next/head'
-import fetch from 'node-fetch'
-import Header from '../../components/header'
-import Nav from '../../components/nav'
 import ErrorPage from '../../components/error-page'
 import axios from 'axios'
 import cookie from 'js-cookie'
+import Content from '../../components/content'
+import Api from '../../lib/api'
 
 export default function Amaliyah({ data }) {
     
     const [ content, setContent ] = useState("")
     const [ hostname, setHostname ] = useState("")
 
-    if (data.status == 401) {
-        return(<ErrorPage title="login" link="/users/login" message={data.status + " | " + data.message} />)
+    cookie.set('token', data.accessToken)
+
+    if (data && data.status !== 200) {
+        return(<ErrorPage data={data} />)
     }
 
     return(
-        <div>
+        <Content 
+            data={data}
+            title='Amaliyah'
+            description='Laman Dashboard untuk pengaturan konten amaliyah pada sistem Amaliyah Robithoh Murid'
+            label='amaliyah'>
 
-            <Head>
-                <title>Amaliyah | API Amaliyah Robithoh Murid</title>
-                <meta name="description" content="Dashboard Amaliyah of Amaliyah Robithoh Murid" />
-            </Head>
-
-            <div className="mx-16 my-2">
-                <Header />
-                <Nav />
-                <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-5 gap-4">
                     <div className="col-span-4">
                         <h2 className="pt-10 pb-3 text-base font-bold">Amaliyah</h2>
                     </div>
@@ -55,20 +51,18 @@ export default function Amaliyah({ data }) {
                     </div>
 
                  )) }
-            </div>
-        </div>
+
+        </Content>
     )
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
 
-    const url = `${process.env.hostname}/api/admin/amaliyah`
-    const options = {
-        url: url,
+    const data = await Api.admin({
+        url: `${process.env.hostname}/api/admin/amaliyah`,
         method: 'GET',
-        headers: { Authorization: cookie.get('token')}
-    }
-    const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
+        token: context.req.cookies.token
+    })
 
     return {
         props: {

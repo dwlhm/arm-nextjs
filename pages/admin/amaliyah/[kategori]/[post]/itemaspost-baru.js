@@ -2,12 +2,10 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import Header from '../../../../../components/header'
-import Nav from '../../../../../components/nav'
-import fetch from 'node-fetch'
 import ErrorPage from '../../../../../components/error-page'
 import axios from 'axios'
 import cookie from 'js-cookie'
+import Content from '../../../../../components/content'
 
 export default function ItemaspostBaru({ data }) {
 
@@ -52,19 +50,17 @@ export default function ItemaspostBaru({ data }) {
     }
 
 
-    if (data.status) {
+    if (data.status !== 200) {
         return(<ErrorPage data={data} />)
     }
 	
 	return(
-		<div>
-			<Head>
-                <title>ItemAsPost Baru | API Amaliyah Robithoh Murid</title>
-                <meta name="description" content="Create new ItemAsPost for Amaliyah Section Following ItemAsPost on Amaliyah Robithoh Murid" />
-            </Head>
-            <div className="mx-16 my-2">
-            	<Header />
-            	<Nav />
+        <Content
+            data={data}
+            title="ItemAsPost Baru"
+            description="Laman Dashboard untuk membuat post baru dari item kategori amaliyah pada sistem Amaliyah Robithoh Murid"
+            label="amaliyah">
+
             	<div className="grid grid-cols-6 gap-4 mt-10">
             		<div className="border-2 border-ungu rounded-md flex justify-center items-center">
                         <Link href={`/admin/amaliyah/${kategori}/${post}`}><a>Kembali</a></Link>
@@ -93,8 +89,8 @@ export default function ItemaspostBaru({ data }) {
                         Simpan ItemAsPost
                     </button>
                 </form>
-            </div>
-        </div>
+
+        </Content>
 		)
 }
 
@@ -104,7 +100,7 @@ export async function getServerSideProps(context) {
     const options = {
         url: url,
         method: 'GET',
-        headers: { Authorization: cookie.get('token') }
+        headers: { Authorization: `Bearer ${context.req.cookies.token}` }
     }
     const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 

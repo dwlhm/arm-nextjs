@@ -5,6 +5,7 @@ import Header from './../../../../../../components/header'
 import Nav from './../../../../../../components/nav'
 import ErrorPage from '../../../../../../components/error-page'
 import axios from 'axios'
+import Content from '../../../../../../components/content'
 
 export default function Kategori({ data }) {
 
@@ -13,19 +14,16 @@ export default function Kategori({ data }) {
 
 	let manipulatedKategori = kategori.replace('-', ' ')
 
-    if (data.status) {
+    if (data.status !== 200) {
         return(<ErrorPage data={data}/>)
     }
 
 	return(
-		<div>
-			<Head>
-                <title>{ item } | API Amaliyah Robithoh Murid</title>
-                <meta name="description" content={`${ item } of Amaliyah Robithoh Murid`} />
-            </Head>
-            <div className="mx-16 my-2">
-            	<Header />
-            	<Nav />
+		<Content
+            data={data}
+            title={ item }
+            description={`${ item } of Amaliyah Robithoh Murid`}
+            label='amaliyah'>
 
                 <div className="flex flex-wrap justify-center items-center border-2 border-ungu rounded-md hover:border-black py-2 px-5 w-max mt-10 mb-3">
                     <Link href={`/admin/amaliyah/${kategori}/${post}`}><a>Kembali</a></Link>
@@ -63,8 +61,8 @@ export default function Kategori({ data }) {
                     </div>
 
                  )) }
-            </div>
-		</div>
+            
+        </Content>
 		)
 }
 
@@ -77,7 +75,7 @@ export async function getServerSideProps(context) {
     const options = {
         url: url,
         method: 'GET',
-        headers: { Authorization: cookie.get('token')}
+        headers: { Authorization: `Bearer ${context.req.cookies.token}` }
     }
     const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 

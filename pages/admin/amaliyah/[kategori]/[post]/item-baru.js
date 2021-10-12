@@ -11,6 +11,7 @@ import 'react-markdown-editor-lite/lib/index.css'
 import ErrorPage from '../../../../../components/error-page'
 import axios from 'axios'
 import cookie from 'js-cookie'
+import Content from '../../../../../components/content'
 
 const MDEditor = dynamic(() => import("react-markdown-editor-lite"), {
 	ssr: false
@@ -45,7 +46,7 @@ export default function ItemonitemBaru({ data }) {
         const url = `${process.env.NEXT_PUBLIC_hostname}/api/admin/amaliyah/${kategori}/${post}`
         const options = {
             url: url,
-            method: 'POST,
+            method: 'POST',
             headers: {
                 Authorization: cookie.get('token'),
                 'Content-Type': 'application/json'
@@ -68,19 +69,16 @@ export default function ItemonitemBaru({ data }) {
         
     }
 
-    if (data.status) {
+    if (data.status !== 200) {
         return(<ErrorPage data={data} />)
     }
 
 	return(
-        <div>
-            <Head>
-                <title>Item Baru | API Amaliyah Robithoh Murid</title>
-                <meta name="description" content="Create new Item for Amaliyah Section Following Post on Amaliyah Robithoh Murid" />
-            </Head>
-            <div className="mx-16 my-2">
-                <Header />
-                <Nav />
+        <Content
+            data={data}
+            title="Item Baru"
+            description="Laman Dashboard untuk membuat Item baru dari post terkait pada sistem Amaliyah Robithoh Murid"
+            label="amaliyah">
 
                 <div className="grid grid-cols-6 gap-4 mt-10 mb-5">
                     <div className="border-2 border-ungu rounded-md flex justify-center items-center">
@@ -107,8 +105,8 @@ export default function ItemonitemBaru({ data }) {
                         Simpan Item
                     </button>
                 </form>  
-            </div>
-        </div>
+
+    </Content>
     )
 }
 
@@ -118,7 +116,7 @@ export async function getServerSideProps(context) {
     const options = {
         url: url,
         method: 'GET',
-        headers: { Authorization: cookie.get('token') }
+        headers: { Authorization: `Bearer ${context.req.cookies.token}` }
     }
     const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 

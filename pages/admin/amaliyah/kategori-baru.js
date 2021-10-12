@@ -7,6 +7,7 @@ import fetch from 'node-fetch'
 import ErrorPage from '../../../components/error-page'
 import axios from 'axios'
 import cookie from 'js-cookie'
+import Content from '../../../components/content'
 
 export default function KategoriBaru({ data }) {
 
@@ -52,14 +53,11 @@ export default function KategoriBaru({ data }) {
     }
 	
 	return(
-		<div>
-			<Head>
-                <title>Kategori Baru | API Amaliyah Robithoh Murid</title>
-                <meta name="description" content="Create new Kategori for Amaliyah Section on Amaliyah Robithoh Murid" />
-            </Head>
-            <div className="mx-16 my-2">
-            	<Header />
-            	<Nav />
+        <Content 
+            title='Kategori Baru'
+            description='Laman Dashboard untuk membuat kategori amaliyah baru pada sistem Amaliyah Robithoh Murid'
+            label='amaliyah'>
+		
             	<div className="grid grid-cols-5 gap-4 mt-10">
                     <div className="col-span-4 flex flex-wrap items-center ungu rounded-md p-3">
                         <h2 className="text-base font-bold text-base text-white">Kategori Baru</h2>
@@ -81,8 +79,8 @@ export default function KategoriBaru({ data }) {
                         Simpan Kategori
                     </button>
                 </form>
-            </div>
-        </div>
+        
+        </Content>
 		)
 }
 
@@ -92,7 +90,7 @@ export async function getServerSideProps(context) {
     const options = {
         url: url,
         method: 'GET',
-        headers: { Authorization: cookie.get('token') }
+        headers: { Authorization: `Bearer ${context.req.cookies.token}`}
     }
     const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 

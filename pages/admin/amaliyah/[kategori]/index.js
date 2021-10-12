@@ -5,27 +5,19 @@ import Header from '../../../../components/header'
 import Nav from '../../../../components/nav'
 import ErrorPage from '../../../../components/error-page'
 import axios from 'axios'
-import cookie from 'js-cookie'
+import Content from '../../../../components/content'
 
 export default function Kategori({ data }) {
 
 	const router = useRouter()
 	const { kategori } = router.query
 
-
-    if (data.status) {
-        return(<ErrorPage data={data} />)
-    }
-
 	return(
-		<div>
-			<Head>
-                <title>{ kategori } | API Amaliyah Robithoh Murid</title>
-                <meta name="description" content={`Dashboard ${ kategori } Amaliyah of Amaliyah Robithoh Murid`} />
-            </Head>
-            <div className="mx-16 my-2">
-            	<Header />
-            	<Nav />
+        <Content
+            data={data}
+            title={data.name}
+            description="Laman Dashboard untuk membuat post baru dari kategori amaliyah pada sistem Amaliyah Robithoh Murid"
+            label="amaliyah">
 
                 <div className="flex flex-wrap justify-center items-center border-2 border-ungu rounded-md hover:border-black py-2 px-5 w-max mt-10 mb-3">
                     <Link href={`./`}><a>Kembali</a></Link>
@@ -56,8 +48,8 @@ export default function Kategori({ data }) {
                     </div>
 
                  )) }
-            </div>
-		</div>
+
+        </Content>
 		)
 }
 
@@ -68,7 +60,7 @@ export async function getServerSideProps(context) {
     const options = {
         url: url,
         method: 'GET',
-        headers: { Authorization: cookie.get('token')}
+        headers: { Authorization: `Bearer ${context.req.cookies.token}`}
     }
     const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 

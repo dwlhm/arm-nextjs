@@ -2,15 +2,14 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import Header from '../../../../../../components/header'
-import Nav from '../../../../../../components/nav'
-import ErrorPage from '../../../../../../components/error-page'
 import fetch from 'node-fetch'
 import dynamic from 'next/dynamic'
 import ReactMarkdown from 'react-markdown'
 import 'react-markdown-editor-lite/lib/index.css'
 import axios from 'axios'
 import cookie from 'js-cookie'
+import ErrorPage from '../../../../../../components/error-page'
+import Content from '../../../../../../components/content'
 
 const MDEditor = dynamic(() => import("react-markdown-editor-lite"), {
 	ssr: false
@@ -25,6 +24,7 @@ export default function ItemonitemBaru({ data }) {
         post: "",
         item: ""
     })
+    const [ content, setContent ] = useState([''])
 
     useEffect(()=>{
         if(!router.isReady) return;
@@ -36,8 +36,6 @@ export default function ItemonitemBaru({ data }) {
     const { kategori, post, item } = docs
 
     let manipulatedItem = item.replace(/-/g, ' ')
-
-    const [ content, setContent ] = useState([''])
 
     const upItem = async event => {
         event.preventDefault()
@@ -60,7 +58,6 @@ export default function ItemonitemBaru({ data }) {
             return ''
         }
 
-
         setBewara({
             display: 'block',
             content: 'The content you entered was detected as duplicate content.'
@@ -72,14 +69,11 @@ export default function ItemonitemBaru({ data }) {
     }
 
 	return(
-        <div>
-            <Head>
-                <title>Post Baru | API Amaliyah Robithoh Murid</title>
-                <meta name="description" content="Create new Post for Amaliyah Section Following Post on Amaliyah Robithoh Murid" />
-            </Head>
-            <div className="mx-16 my-2">
-                <Header />
-                <Nav />
+        <Content
+            data={data}
+            title='Post Baru'
+            description='Create new Post for Amaliyah Section Following Post on Amaliyah Robithoh Murid'
+            label='amaliyah'>
 
                 <div className="grid grid-cols-6 gap-4 mt-10 mb-5">
                     <div className="border-2 border-ungu rounded-md flex justify-center items-center">
@@ -106,18 +100,18 @@ export default function ItemonitemBaru({ data }) {
                         Simpan Item
                     </button>
                 </form>  
-            </div>
-        </div>
+            
+        </Content>
     )
 }
 
 export async function getServerSideProps(context) {
-    console.log(context.req.cookies)
+
     const url = `${process.env.hostname}/api/user/ping`
     const options = {
         url: url,
         method: 'GET',
-        headers: { Authorization: cookie.get('token') }
+        headers: { Authorization: `Bearer ${context.req.cookies.token}` }
     }
     const data = await axios.request(options).then(res => res.data).catch(err => err.response.data)
 

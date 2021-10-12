@@ -28,6 +28,8 @@ export default function Login() {
 				.then(res => {
 					console.log(res.data)
 					cookie.set('token', res.data.data)
+
+					window.history.back()
 				}).catch(err => {
 					console.log(err.response.data)
 				});

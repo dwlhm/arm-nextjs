@@ -1,4 +1,5 @@
 const { readKategori } = require('../../../lib/amaliyah')
+const Result = require('../../../lib/result')
 
 export default async function handler(req, res) {
 
@@ -23,35 +24,18 @@ export default async function handler(req, res) {
 
 		})
 
-	    res.status(200).json({
-	    	status: 200,
-	        message: "Success",
-	        data: listPost.post
-	    })
+	    throw {data: listPost.post}
 
-    } catch (error) {
+    } catch (response) {
 
-    	console.log(error)
-    	
-    	if (error.code) {
-
-    		res.status(200)
-    		res.json({
-    			status: 400,
-    			message: "Bad Request",
-    			data: null
-    		})
-
-    		return ''
-
+    	const data = {
+    		res: res,
+    		status: 201,
+    		data: response.data,
+    		error: response.data ? undefined : response
     	}
 
-    	res.status(500)
-    	res.json({
-    		status: 500,
-    		message: "Internal Server Error",
-    		data: null
-    	})
+    	await Result(data)
 
     }
 }
