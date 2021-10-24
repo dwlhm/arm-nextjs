@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 		}).catch(err => {
 			console.error({
 				info: err,
-				affectedDevice: req.headers.['user-agent'],
+				affectedDevice: req.headers['user-agent'],
 				date: new Date() 
 			})
 			return false
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 			device: req.headers['user-agent']
 		}
 		try {
-			dataUser.token = await jwt.sign(dataJWT, PRIVATE_KEY, { algorithm: 'RS256', expiresIn: '1m' })
+			dataUser.token = await jwt.sign(dataJWT, PRIVATE_KEY, { algorithm: 'RS256' })
 		} catch(error) {
 			console.error({
 				info: error,

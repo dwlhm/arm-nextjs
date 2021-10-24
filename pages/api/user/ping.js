@@ -14,13 +14,6 @@ export default async function handler(req, res) {
 			date: new Date() 
 		})
 
-		const dataJWT = {
-			id: uuidv4(),
-			device: req.headers['user-agent']
-		}
-
-		const JWToken = await jwt.sign(dataJWT, PRIVATE_KEY, { algorithm: 'RS256', expiresIn: '1m' })
-
 		res.status(401).json({
 			status: 401,
 			message: 'Unauthorized',
@@ -51,12 +44,10 @@ export default async function handler(req, res) {
 	} catch(error) {
 		console.error({
 			info: error,
-			affectedDevice: req.headers.['user-agent'],
+			affectedDevice: req.headers['user-agent'],
 			date: new Date() 
 		})
 	}
-
-	console.log(verified)
 
 	res.status(401).json({
 		status: 401,
