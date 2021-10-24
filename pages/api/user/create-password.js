@@ -4,9 +4,18 @@ import { firestore } from '../../../lib/firebase'
 import bcrypt from 'bcrypt'
 
 export default async function handler(req, res) {
+
+	if (req.method !== 'POST') {
+		res.status(405).json({
+			status: 405,
+			message: 'Method Not Allowed',
+			data: {},
+			error: 'http method used does not exist'
+		})
+	}
 	
 
-	try {
+	/*try {
 
 		if (req.method !== 'POST') throw { code: 38.1 }
 
@@ -53,5 +62,5 @@ export default async function handler(req, res) {
 	        data: null 
 	    })
 
-	}
+	}*/
 }

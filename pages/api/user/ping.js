@@ -1,22 +1,67 @@
-import { verify } from '../../../lib/auth'
+const jwt = require('jsonwebtoken')
+const { v4: uuidv4 } = require('uuid')
+
+const PUBLIC_KEY = process.env.PUBLIC_KEY,
+	  PRIVATE_KEY = process.env.PRIVATE_KEY
 
 export default async function handler(req, res) {
 
-	const ping = await verify(req, res)
+	if (!req.headers.authorization || !req.headers.authorization.split(" ")[1]) {
 
-	if (!ping) {
+		console.error({
+			info: 'activity of an unregistered identity',
+			affectedDevice: req.headers.['user-agent'],
+			date: new Date() 
+		})
+
+		const dataJWT = {
+			id: uuidv4(),
+			device: req.headers['user-agent']
+		}
+
+		const JWToken = await jwt.sign(dataJWT, PRIVATE_KEY, { algorithm: 'RS256', expiresIn: '1m' })
+
 		res.status(401).json({
 			status: 401,
 			message: 'Unauthorized',
-			data: ping
+			data: JWToken,
+			error: 'activity of an unregistered identity'
 		})
 
-		return ''
-	} 
+		return
+	}
 
-	res.status(200).json({
-		status: 200,
-		message: 'Success',
-		data: ping
+	const token = req.headers.authorization.split(" ")[1]
+
+	let verified
+
+	try {
+		verified = jwt.verify(token, PUBLIC_KEY)
+		if (verified.device == req.headers['user-agent']) {
+
+			res.status(200).json({
+				status: 202,
+				message: 'Accepted',
+				data: verified,
+				error: ''
+			})
+
+		}
+		return 
+	} catch(error) {
+		console.error({
+			info: error,
+			affectedDevice: req.headers.['user-agent'],
+			date: new Date() 
+		})
+	}
+
+	console.log(verified)
+
+	res.status(401).json({
+		status: 401,
+		message: 'Unauthorized',
+		data: {},
+		error: 'the jwt token is no longer valid'
 	})
 }
