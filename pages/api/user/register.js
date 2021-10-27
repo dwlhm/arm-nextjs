@@ -6,7 +6,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY
 
 export default async function handler(req, res) {
 
-	if (!req.body.username || !req.body.role) {
+	if (!req.body.email || !req.body.role) {
 		res.status(401).json({
 			status: 401,
 			message: 'Unauthorized',
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 	}
 
 	const userData = {
-		username: req.body.username,
+		username: req.body.email,
 		role: req.body.role
 	}
 
@@ -30,9 +30,7 @@ export default async function handler(req, res) {
 		})
 	})
 
-	console.log(checkUsername)
-
-	if (checkUsername) {
+	if (checkUsername) {``
 		res.status(409).json({
 			status: 409,
 			message: 'Conflict',
