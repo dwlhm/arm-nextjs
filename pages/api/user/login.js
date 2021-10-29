@@ -1,25 +1,66 @@
 const jwt = require('jsonwebtoken')
 const firebase = require('firebase-admin')
 const bcrypt = require('bcrypt')
+const Cors = require('cors')
 const { v4: uuidv4 } = require('uuid')
 const { firestore } = require('../../../lib/firebase')
+const initMiddleware = require('../../../lib/init-middleware')
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY,
 	  PRIVATE_KEY = process.env.PRIVATE_KEY
 
+// Initializing the cors middleware
+const cors = Cors({
+  methods: ['POST'],
+})
+
+// Helper method to wait for a middleware to execute before continuing
+// And to throw an error when an error happens in a middleware
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result)
+      }
+
+      return resolve(result)
+    })
+  })
+}
+
 export default async function handler(req, res) {
+	// Run cors
+  await runMiddleware(req, res, cors)
 
 	if (req.method !== 'POST') {
+
+		console.error({
+				info: "Wrong http method, u used: " + req.method,
+				affectedDevice: req.headers['user-agent'],
+				date: new Date() 
+			})
+
 		res.status(405).json({
 			status: 405,
 			message: 'Method Not Allowed',
 			data: {},
 			error: 'http method used does not exist'
 		})
+
+		return
 	}
 
 	if (req.headers.authorization) {
 		const [ username, password ] = Buffer.from(req.headers.authorization.split(" ")[1], 'base64').toString().split(':')
+		if (!username) {
+			res.status(401).json({
+				status: 401,
+				message: 'Unauthorized',
+				data: '',
+				error: 'request from unregistered client'
+			})
+			return
+		}
 		let dataUser = {
 			username: username,
 			role: "",
@@ -52,6 +93,7 @@ export default async function handler(req, res) {
 		dataUser.role = searchDB.role
 		const dataJWT = {
 			id: uuidv4(),
+			role: dataUser.role,
 			device: req.headers['user-agent']
 		}
 		try {
@@ -65,7 +107,7 @@ export default async function handler(req, res) {
 		} 
 
 		firestore().collection('user-activity').doc(dataJWT.id).create({
-			username: email,
+			username: username,
 			role: dataUser.role,
 			device: dataJWT.device,
 			loginOn: firebase.firestore.FieldValue.serverTimestamp()

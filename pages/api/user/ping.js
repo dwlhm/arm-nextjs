@@ -1,10 +1,33 @@
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
+const Cors = require('cors')
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY,
 	  PRIVATE_KEY = process.env.PRIVATE_KEY
 
+// Initializing the cors middleware
+const cors = Cors({
+  methods: ['GET', 'POST'],
+})
+
+// Helper method to wait for a middleware to execute before continuing
+// And to throw an error when an error happens in a middleware
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result)
+      }
+
+      return resolve(result)
+    })
+  })
+}
+
 export default async function handler(req, res) {
+
+	await runMiddleware(req, res, cors)
+
 
 	if (!req.headers.authorization || !req.headers.authorization.split(" ")[1]) {
 
@@ -30,6 +53,7 @@ export default async function handler(req, res) {
 
 	try {
 		verified = jwt.verify(token, PUBLIC_KEY)
+
 		if (verified.device == req.headers['user-agent']) {
 
 			res.status(200).json({
@@ -39,8 +63,9 @@ export default async function handler(req, res) {
 				error: ''
 			})
 
+			return 
+
 		}
-		return 
 	} catch(error) {
 		console.error({
 			info: error,

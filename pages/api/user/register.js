@@ -1,10 +1,50 @@
 const jwt = require('jsonwebtoken')
 const axios = require('axios')
+const cors = require('cors')
 const { firestore } = require('../../../lib/firebase')
+const initMiddleware = require('../../../lib/init-middleware')
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 
+// Initializing the cors middleware
+const cors = Cors({
+  methods: ['POST'],
+})
+
 export default async function handler(req, res) {
+
+	await initMiddleware(req, res, cors).then(it => {
+		if (it.data.role !== 'editor') {
+			res.status(401).json({
+				status: 401,
+				message: 'Unauthorized',
+				data: '',
+				error: 'unidentified activity'
+			})
+
+			return
+		}
+	}).catch(err => {
+		res.status(401).json({
+			status: 401,
+			message: 'Unauthorized',
+			data: '',
+			error: 'unidentified activity'
+		})
+
+		return
+	})
+
+	if (req.method !== "POST") {
+		res.status(401).json({
+			status: 401,
+			message: 'Unauthorized',
+			data: '',
+			error: 'unidentified activity'
+		})
+
+		return
+	}
 
 	if (!req.body.email || !req.body.role) {
 		res.status(401).json({
