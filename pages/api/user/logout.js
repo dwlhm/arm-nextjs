@@ -17,6 +17,8 @@ export default async function handler(req, res) {
 	}
 	const JWToken = req.headers.authorization.split(" ")[1]
 	let verified
+
+	console.log(req.headers['user-agent'])
 	try {
 		verified = jwt.verify(JWToken, PUBLIC_KEY)
 		if (verified.device == req.headers['user-agent']) {

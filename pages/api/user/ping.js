@@ -49,6 +49,9 @@ export default async function handler(req, res) {
 
 	const token = req.headers.authorization.split(" ")[1]
 
+	console.log('ini token di sisi server')
+	console.log(req.headers.authorization + " -")
+
 	let verified
 
 	try {
