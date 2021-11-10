@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken')
-const firebase = require('firebase-admin')
 const bcrypt = require('bcrypt')
 const Cors = require('cors')
 const { v4: uuidv4 } = require('uuid')
 const { firestore } = require('../../../lib/firebase')
+import firebase from 'firebase-admin'
 import initMiddleware from '../../../lib/init-middleware'
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY
@@ -47,6 +47,8 @@ export default async function handler(req, res) {
 	  		date: new Date() 
   		})
   	})
+
+  console.log(db.device)
 
   if (db.device && db.device.indexOf(req.headers['user-agent']) >= 0) {
   	return res.status(409).json({
@@ -92,32 +94,34 @@ export default async function handler(req, res) {
   	})
   }
 
-  await firestore().collection('user-activity').doc(dataJWT.id).create({
+  const saved = await firestore().collection('user-activity').doc(dataJWT.id).create({
 			username: email,
 			role: dataJWT.role,
 			device: dataJWT.device,
 			loginOn: firebase.firestore.FieldValue.serverTimestamp()
-		}).catch(err => {
-			console.error(err)
-			return res.status(500).json({
-	  		status: 500,
-	  		message: "Internal Server Error",
-	  		data: {},
-	  		error: "can't save login info"
-	  	})
-		})
+		}).then(it => true).catch(err => console.error(err))
 
-	await firestore().collection('user-data').doc(email).update({
-		device: listDevice.push(req.headers.device)
-	}).catch(err => {
-		console.error(err)
+	if (!saved) {
+		return res.status(500).json({
+	  	status: 500,
+	  	message: "Internal Server Error",
+	  	data: {},
+	  	error: "can't save login info"
+	  })
+	}
+
+	const devicePin = await firestore().collection('user-data').doc(email).update({
+			device: firebase.firestore.FieldValue.arrayUnion(req.headers['user-agent'])
+		}).catch(err => console.error(err))
+
+	if (!devicePin) {
 		return res.status(500).json({
 	  	status: 500,
   		message: "Internal Server Error",
 	 		data: {},
 	 		error: "can't save login info"
 	  })
-	})
+	}
 
   return res.status(202).json({
     status: 202,
