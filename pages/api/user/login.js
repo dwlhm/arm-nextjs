@@ -4,130 +4,128 @@ const bcrypt = require('bcrypt')
 const Cors = require('cors')
 const { v4: uuidv4 } = require('uuid')
 const { firestore } = require('../../../lib/firebase')
-const initMiddleware = require('../../../lib/init-middleware')
+import initMiddleware from '../../../lib/init-middleware'
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY,
-	  PRIVATE_KEY = process.env.PRIVATE_KEY
+const PRIVATE_KEY = process.env.PRIVATE_KEY
+const dataJWT = {
+			id: uuidv4(),
+			role: 'admin',
+			device: undefined
+		}
+let JWToken
+let listDevice = []
 
-// Initializing the cors middleware
-const cors = Cors({
-  methods: ['POST'],
-})
-
-// Helper method to wait for a middleware to execute before continuing
-// And to throw an error when an error happens in a middleware
-function runMiddleware(req, res, fn) {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result)
-      }
-
-      return resolve(result)
-    })
-  })
-}
+/*
+	ALUR PROGRAM >>
+	* Cek headers authorization berbentuk jwt atau tidak
+	* Cek device sudah login atau belum
+	* Validasi data pada headers aurhorization dengan data pada env
+	* Validasi data pada headers authorization dengan data pada db
+	* Tulis aktivitas login di db apabila hasil validasi = true
+	* return 200 apabila validasi = true, return 400 apabila validasi = false
+*/
 
 export default async function handler(req, res) {
-	// Run cors
-  await runMiddleware(req, res, cors)
 
-	if (req.method !== 'POST') {
+	// JWT Check
+  await initMiddleware(req, res, ['POST'], ['admin', 'author'])
+  	.then(it => {
+  		return res.status(it.status).json({
+  			...it,
+  			detail: undefined
+  		})
+  	}).catch(err => console.log(err))
 
-		console.error({
-				info: "Wrong http method, u used: " + req.method,
-				affectedDevice: req.headers['user-agent'],
-				date: new Date() 
-			})
+  const [ email, password ] = Buffer.from(req.headers.authorization.split(" ")[1], 'base64').toString().split(':')
 
-		res.status(405).json({
-			status: 405,
-			message: 'Method Not Allowed',
+  // Cek device di db
+  const db = await firestore().collection('user-data').doc(email).get()
+  	.then(it => it.data()).catch(err => {
+  		console.error({
+	  		info: err,
+	  		affectedDevice: req.headers['user-agent'],
+	  		date: new Date() 
+  		})
+  	})
+
+  if (db.device && db.device.indexOf(req.headers['user-agent']) >= 0) {
+  	return res.status(409).json({
+			status: 409,
+			message: 'Conflict',
 			data: {},
-			error: 'http method used does not exist'
+			error: 'been logged in before'
 		})
+  }
 
-		return
-	}
-
-	if (req.headers.authorization) {
-		const [ username, password ] = Buffer.from(req.headers.authorization.split(" ")[1], 'base64').toString().split(':')
-		if (!username) {
-			res.status(401).json({
-				status: 401,
-				message: 'Unauthorized',
-				data: '',
-				error: 'request from unregistered client'
-			})
-			return
-		}
-		let dataUser = {
-			username: username,
-			role: "",
-			token: ""
-		} 
-		if (process.env.ADMIN_USERNAME == username && process.env.ADMIN_PASSWORD == password) dataUser.role = "admin"
-		let verified	
-		const searchDB = await firestore().collection('user').doc(username).get().then(async it => {
-			let comparePW = await bcrypt.compare(password, it.data().password)
-			verified = it.exists
-			if (comparePW) return it.data()
-			verified = false
-		}).catch(err => {
-			console.error({
-				info: err,
-				affectedDevice: req.headers['user-agent'],
-				date: new Date() 
-			})
-			return false
+  // cek username & pass di env || db
+  let compareDb = await bcrypt.compare(password, db.password).then(it => it)
+  	.catch(err => console.error(err))
+  if (process.env.ADMIN_PASSWORD !== password && compareDb !== true) {
+  	return res.status(409).json({
+  		status: 401,
+			message: 'Unauthorized',
+			data: {},
+			error: 'Incorrect data entered'
 		})
-		if (!verified) {
-			res.status(401).json({
-				status: 401,
-				message: 'Unauthorized',
-				data: '',
-				error: 'request from unregistered client'
-			})
-			return
-		}
-		dataUser.role = searchDB.role
-		const dataJWT = {
-			id: uuidv4(),
-			role: dataUser.role,
-			device: req.headers['user-agent']
-		}
-		try {
-			dataUser.token = await jwt.sign(dataJWT, PRIVATE_KEY, { algorithm: 'RS256' })
-		} catch(error) {
-			console.error({
-				info: error,
-				affectedDevice: req.headers.['user-agent'],
-				date: new Date() 
-			})
-		} 
+  }
 
-		firestore().collection('user-activity').doc(dataJWT.id).create({
-			username: username,
-			role: dataUser.role,
+  if (db.device) {
+  	listDevice = db.device
+  }
+
+  if (db.role) {
+  	dataJWT.role = db.role
+  }
+
+  dataJWT.device = req.headers['user-agent']
+
+  // Create JWT token
+  try {
+  	JWToken = await jwt.sign(dataJWT, PRIVATE_KEY, { algorithm: 'RS256' })
+  } catch(err) { 
+  	console.error(err) 
+  	return res.status(500).json({
+  		status: 500,
+  		message: "Internal Server Error",
+  		data: {},
+  		error: "can't generate token"
+  	})
+  }
+
+  await firestore().collection('user-activity').doc(dataJWT.id).create({
+			username: email,
+			role: dataJWT.role,
 			device: dataJWT.device,
 			loginOn: firebase.firestore.FieldValue.serverTimestamp()
+		}).catch(err => {
+			console.error(err)
+			return res.status(500).json({
+	  		status: 500,
+	  		message: "Internal Server Error",
+	  		data: {},
+	  		error: "can't save login info"
+	  	})
 		})
 
-		res.status(202).json({
-			status: 202,
-			message: 'Accepted',
-			data: dataUser,
-			error: ''
-		})	
-
-		return
-	}
-
-	res.status(401).json({
-		status: 401,
-		message: 'Unauthorized',
-		data: '',
-		error: 'request from unregistered client'
+	await firestore().collection('user-data').doc(email).update({
+		device: listDevice.push(req.headers.device)
+	}).catch(err => {
+		console.error(err)
+		return res.status(500).json({
+	  	status: 500,
+  		message: "Internal Server Error",
+	 		data: {},
+	 		error: "can't save login info"
+	  })
 	})
 
+  return res.status(202).json({
+    status: 202,
+    message: 'Accepted',
+  	data: {
+      role: dataJWT.role,
+    	token: JWToken
+    },
+   	error: ''
+   })
 }
