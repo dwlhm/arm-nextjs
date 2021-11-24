@@ -18,8 +18,6 @@ export default async function handler(req, res) {
 		})
 	}
 
-	console.log(rejected.data.id)
-
 	// read db
 	const db = await firestore().collection("user-activity")
 		.doc(rejected.data.id)
@@ -46,11 +44,38 @@ export default async function handler(req, res) {
 		})
 	}
 
+	const profil = await firestore().collection("user-data")
+		.doc(db.data.email).get()
+		.then(it => {
+			let dataUser = it.data()
+			return {
+				status: it.exists,
+				data: dataUser
+			}
+		}).catch(err => {
+			console.error(err)
+			return {
+				status: false,
+				data: err
+			}
+		})
+
+	if (profil.status !== true) {
+		return res.status(500).json({
+			status: 500,
+			message: "Internal Server Error",
+			data: "",
+			error: "data not found in db"
+		})
+	}
+
 	return res.status(200).json({
 		status: 200,
 		message: "Success",
 		data: {
-			...db.data,
+			...profil.data,
+			password: undefined,
+			editedBy: undefined,
 			loginOn: undefined
 		},
 		error: ""

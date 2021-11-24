@@ -95,7 +95,7 @@ export default async function handler(req, res) {
   }
 
   const saved = await firestore().collection('user-activity').doc(dataJWT.id).create({
-			username: email,
+			email: email,
 			role: dataJWT.role,
 			device: dataJWT.device,
 			loginOn: firebase.firestore.FieldValue.serverTimestamp()

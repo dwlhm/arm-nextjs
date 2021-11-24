@@ -11,7 +11,7 @@ export default function CreatePassword() {
     const createPassword = async event => {
         event.preventDefault()
 
-        const api = await fetch(`http://localhost:3000/api/user/create-password?key=${jwt}`, {
+        const api = await fetch(`http://localhost:3001/api/user/create-password?key=${jwt}`, {
             method: 'POST',
             body: JSON.stringify({
                'new-password': event.target.password.value
